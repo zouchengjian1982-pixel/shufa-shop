@@ -1,4 +1,3 @@
-// 书画用品商品数据
 const products = [
     { id: 1, name: '狼毫毛笔套装', price: 168, category: 'brush', icon: '🖌️', desc: '精选狼毫，弹性好' },
     { id: 2, name: '兼毫书法笔', price: 88, category: 'brush', icon: '🖌️', desc: '软硬适中，初学首选' },
@@ -14,35 +13,24 @@ const products = [
     { id: 12, name: '文房四宝套装', price: 388, category: 'all', icon: '🎁', desc: '笔墨纸砚齐全，送礼佳品' }
 ];
 
-// 购物车数据
 let cart = JSON.parse(localStorage.getItem('shuhua_cart')) || [];
+let orderInfo = {};
 
-// 初始化
 document.addEventListener('DOMContentLoaded', function() {
     renderProducts('all');
     updateCartCount();
-    bindCategoryEvents();
-});
-
-// 绑定分类切换事件
-function bindCategoryEvents() {
-    const items = document.querySelectorAll('.category-item');
-    items.forEach(item => {
+    document.querySelectorAll('.category-item').forEach(item => {
         item.addEventListener('click', function() {
-            items.forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
             renderProducts(this.dataset.category);
         });
     });
-}
+});
 
-// 渲染商品列表
 function renderProducts(category) {
     const list = document.getElementById('productList');
-    const filtered = category === 'all' 
-        ? products 
-        : products.filter(p => p.category === category || p.category === 'all');
-    
+    const filtered = category === 'all' ? products : products.filter(p => p.category === category || p.category === 'all');
     list.innerHTML = filtered.map(p => `
         <div class="product-card">
             <div class="product-image">${p.icon}</div>
@@ -58,59 +46,36 @@ function renderProducts(category) {
     `).join('');
 }
 
-// 添加到购物车
 function addToCart(id) {
     const product = products.find(p => p.id === id);
     const existing = cart.find(item => item.id === id);
-    
-    if (existing) {
-        existing.quantity++;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-    
+    if (existing) { existing.quantity++; } 
+    else { cart.push({ ...product, quantity: 1 }); }
     saveCart();
     updateCartCount();
     showToast('已加入购物车');
 }
 
-// 更新购物车数量
 function updateCartCount() {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-// 保存购物车
-function saveCart() {
-    localStorage.setItem('shuhua_cart', JSON.stringify(cart));
-}
+function saveCart() { localStorage.setItem('shuhua_cart', JSON.stringify(cart)); }
 
-// 显示购物车
 function showCart() {
     renderCart();
     document.getElementById('cartModal').classList.add('show');
 }
 
-// 隐藏购物车
-function hideCart() {
-    document.getElementById('cartModal').classList.remove('show');
-}
+function hideCart() { document.getElementById('cartModal').classList.remove('show'); }
 
-// 渲染购物车
 function renderCart() {
     const list = document.getElementById('cartList');
-    
     if (cart.length === 0) {
-        list.innerHTML = `
-            <div class="empty-cart">
-                <div class="empty-cart-icon">🛒</div>
-                <p>购物车是空的</p>
-            </div>
-        `;
+        list.innerHTML = '<div class="empty-cart"><div style="font-size:60px">🛒</div><p>购物车是空的</p></div>';
         document.getElementById('totalPrice').textContent = '¥0';
         return;
     }
-    
     list.innerHTML = cart.map(item => `
         <div class="cart-item">
             <div class="cart-item-icon">${item.icon}</div>
@@ -125,53 +90,49 @@ function renderCart() {
             </div>
         </div>
     `).join('');
-    
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    document.getElementById('totalPrice').textContent = `¥${total}`;
+    document.getElementById('totalPrice').textContent = '¥' + cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
-// 修改数量
 function changeQty(id, delta) {
     const item = cart.find(i => i.id === id);
     if (item) {
         item.quantity += delta;
-        if (item.quantity <= 0) {
-            cart = cart.filter(i => i.id !== id);
-        }
+        if (item.quantity <= 0) { cart = cart.filter(i => i.id !== id); }
         saveCart();
         updateCartCount();
         renderCart();
     }
 }
 
-// 结算
 function checkout() {
-    if (cart.length === 0) {
-        showToast('购物车是空的');
-        return;
-    }
-    
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    document.getElementById('payAmount').textContent = `¥${total}`;
+    if (cart.length === 0) { showToast('购物车是空的'); return; }
     hideCart();
+    document.getElementById('addressModal').classList.add('show');
+}
+
+function hideAddressModal() { document.getElementById('addressModal').classList.remove('show'); }
+
+function submitAddress() {
+    const name = document.getElementById('receiverName').value.trim();
+    const phone = document.getElementById('receiverPhone').value.trim();
+    const address = document.getElementById('receiverAddress').value.trim();
+    const remark = document.getElementById('orderRemark').value.trim();
+    if (!name) { showToast('请输入收件人姓名'); return; }
+    if (!phone) { showToast('请输入联系电话'); return; }
+    if (!address) { showToast('请输入收货地址'); return; }
+    orderInfo = { name, phone, address, remark };
+    document.getElementById('payAmount').textContent = '¥' + cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    hideAddressModal();
     document.getElementById('payModal').classList.add('show');
 }
 
-// 隐藏支付弹窗
-function hidePayModal() {
-    document.getElementById('payModal').classList.remove('show');
-}
+function hidePayModal() { document.getElementById('payModal').classList.remove('show'); }
 
-// 复制微信号
 function copyWechat() {
     const wechat = document.getElementById('sellerWechat').textContent;
-    
     if (navigator.clipboard) {
-        navigator.clipboard.writeText(wechat).then(() => {
-            showToast('已复制微信号');
-        });
+        navigator.clipboard.writeText(wechat).then(() => showToast('已复制微信号'));
     } else {
-        // 兼容旧浏览器
         const input = document.createElement('input');
         input.value = wechat;
         document.body.appendChild(input);
@@ -182,34 +143,33 @@ function copyWechat() {
     }
 }
 
-// 确认付款
 function confirmPay() {
+    const order = {
+        id: Date.now(),
+        items: [...cart],
+        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        receiver: orderInfo,
+        status: 'paid',
+        time: new Date().toLocaleString()
+    };
+    let orders = JSON.parse(localStorage.getItem('shuhua_orders')) || [];
+    orders.unshift(order);
+    localStorage.setItem('shuhua_orders', JSON.stringify(orders));
     showToast('订单已提交，请等待卖家确认');
     cart = [];
     saveCart();
     updateCartCount();
     hidePayModal();
+    document.getElementById('receiverName').value = '';
+    document.getElementById('receiverPhone').value = '';
+    document.getElementById('receiverAddress').value = '';
+    document.getElementById('orderRemark').value = '';
 }
 
-// Toast提示
 function showToast(msg) {
     const toast = document.createElement('div');
-    toast.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0,0,0,0.7);
-        color: #fff;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        z-index: 999;
-    `;
+    toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:999;';
     toast.textContent = msg;
     document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 2000);
+    setTimeout(() => toast.remove(), 2000);
 }
