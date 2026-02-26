@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>书画用品商城</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>🎨 书画用品商城</h1>
+        <p class="subtitle">笔墨纸砚 · 传承经典</p>
+    </header>
+
+    <nav class="category-nav">
+        <div class="category-item active" data-category="all">全部</div>
+        <div class="category-item" data-category="brush">毛笔</div>
+        <div class="category-item" data-category="ink">墨汁</div>
+        <div class="category-item" data-category="paper">宣纸</div>
+        <div class="category-item" data-category="inkstone">砚台</div>
+    </nav>
+
+    <main class="product-list" id="productList">
+        <!-- 商品列表由JS动态生成 -->
+    </main>
+
+    <div class="cart-float" id="cartFloat" onclick="showCart()">
+        🛒 <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>购物车</h2>
+                <span class="close-btn" onclick="hideCart()">×</span>
+            </div>
+            <div class="cart-list" id="cartList"></div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    合计: <span class="total-price" id="totalPrice">¥0</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">立即下单</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="payModal">
+        <div class="modal-content pay-content">
+            <div class="modal-header">
+                <h2>扫码支付</h2>
+                <span class="close-btn" onclick="hidePayModal()">×</span>
+            </div>
+            <div class="pay-amount">
+                <p>订单金额</p>
+                <span class="amount" id="payAmount">¥0</span>
+            </div>
+            <div class="qrcode-box">
+                <img src="images/pay_qrcode.png" alt="收款码" class="qrcode">
+                <p>长按保存，微信扫码支付</p>
+            </div>
+            <div class="pay-info">
+                <p>💬 付款后请联系卖家确认</p>
+                <p>微信号: <strong id="sellerWechat">zouchengjian2011</strong> 
+                    <button class="copy-btn" onclick="copyWechat()">复制</button>
+                </p>
+            </div>
+            <button class="confirm-btn" onclick="confirmPay()">我已完成付款</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>联系客服: zouchengjian2011</p>
+        <p>© 2026 书画用品商城</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
