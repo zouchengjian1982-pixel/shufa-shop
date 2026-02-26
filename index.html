@@ -20,9 +20,7 @@
         <div class="category-item" data-category="inkstone">砚台</div>
     </nav>
 
-    <main class="product-list" id="productList">
-        <!-- 商品列表由JS动态生成 -->
-    </main>
+    <main class="product-list" id="productList"></main>
 
     <div class="cart-float" id="cartFloat" onclick="showCart()">
         🛒 <span class="cart-count" id="cartCount">0</span>
@@ -36,11 +34,37 @@
             </div>
             <div class="cart-list" id="cartList"></div>
             <div class="cart-footer">
-                <div class="cart-total">
-                    合计: <span class="total-price" id="totalPrice">¥0</span>
-                </div>
+                <div class="cart-total">合计: <span class="total-price" id="totalPrice">¥0</span></div>
                 <button class="checkout-btn" onclick="checkout()">立即下单</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addressModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>收件人信息</h2>
+                <span class="close-btn" onclick="hideAddressModal()">×</span>
+            </div>
+            <div class="address-form">
+                <div class="form-group">
+                    <label>收件人姓名</label>
+                    <input type="text" id="receiverName" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>联系电话</label>
+                    <input type="tel" id="receiverPhone" placeholder="请输入手机号">
+                </div>
+                <div class="form-group">
+                    <label>收货地址</label>
+                    <textarea id="receiverAddress" placeholder="请输入详细地址" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>备注（选填）</label>
+                    <input type="text" id="orderRemark" placeholder="如有特殊要求请备注">
+                </div>
+            </div>
+            <button class="submit-btn" onclick="submitAddress()">确认并支付</button>
         </div>
     </div>
 
